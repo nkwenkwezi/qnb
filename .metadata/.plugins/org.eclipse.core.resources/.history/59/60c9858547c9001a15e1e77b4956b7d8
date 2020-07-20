@@ -1,0 +1,32 @@
+package qa.co.qnb.domain;
+
+import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
+import lombok.Getter;
+@ConfigurationProperties(prefix = "file")
+@Entity
+@Table(name ="tblFile_upload")
+@Data
+public class FileProperties {
+	@Id
+	@Column(name="uuid", nullable = false)
+	@Getter
+	private String uuid = UUID.randomUUID().toString();
+	@Column(name ="file_name", nullable = false)
+	private String fileName;
+	@Column(name ="date_created", nullable = false)
+	private String dateCreated;
+	@Column(name ="file_location", nullable = false)
+	private String filelocation;
+	@Column(name ="file_extension", nullable = false)
+	private String fileExtension;
+	
+}

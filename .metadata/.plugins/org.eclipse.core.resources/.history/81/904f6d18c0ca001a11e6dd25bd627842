@@ -1,0 +1,21 @@
+package qa.co.qnb.service.impl;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import qa.co.qnb.dto.PostDTO;
+import qa.co.qnb.repository.PostRepository;
+import qa.co.qnb.service.PostService;
+
+@Transactional
+@Service
+public class PostServiceImpl implements PostService {
+	@Autowired
+	private PostRepository postRepository;
+	
+	public PostDTO savePost() {
+		
+	}
+}

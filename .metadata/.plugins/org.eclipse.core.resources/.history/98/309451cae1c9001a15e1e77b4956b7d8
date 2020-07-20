@@ -1,0 +1,13 @@
+package qa.co.qnb.service.impl;
+
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
+import qa.co.qnb.service.PostService;
+
+@Transactional
+@Service
+public class PostServiceImpl implements PostService{
+
+}

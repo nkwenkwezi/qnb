@@ -1,0 +1,29 @@
+package qa.co.qnb.controller;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import qa.co.qnb.client.PostClient;
+import qa.co.qnb.dto.PostDTO;
+
+@RestController
+public class CommentsController {
+	@Autowired
+	private PostClient commentClient;
+	private static final Logger logger = LoggerFactory.getLogger(CommentsController.class);
+	
+	@GetMapping( value ="/getPosts/{postId}")
+	public ResponseEntity<List<PostDTO>> getPosts(@PathVariable("userId")String userId){
+		List<PostDTO> list = commentClient.findPosts(userId);
+		logger.info("list {}", list);
+		return new ResponseEntity<List<PostDTO>>(list, HttpStatus.OK);
+	}
+}

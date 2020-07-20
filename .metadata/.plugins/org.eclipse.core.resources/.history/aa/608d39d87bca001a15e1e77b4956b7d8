@@ -1,0 +1,13 @@
+package qa.co.qnb.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = Post.PostBuilder.class)
+@Value
+@Builder
+public class PostDTO {
+	private String userId;
+    private String id;
+    private String title;
+    private String body;
+}

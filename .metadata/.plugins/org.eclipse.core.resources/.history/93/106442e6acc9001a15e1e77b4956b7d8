@@ -1,0 +1,13 @@
+package qa.co.qnb.exception;
+
+public class FileStorageNotFoundException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+	
+	public FileStorageNotFoundException(String message) {
+		super(message);
+	}
+	public FileStorageNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}

@@ -1,0 +1,152 @@
+package qa.co.qnb.service.impl;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import qa.co.qnb.constants.Constants;
+import qa.co.qnb.domain.FileProperties;
+import qa.co.qnb.dto.FileServiceResponse;
+import qa.co.qnb.exception.FileStorageException;
+import qa.co.qnb.repository.FilePropertiesRepository;
+import qa.co.qnb.service.FileService;
+
+@Transactional
+@Service
+public class FileServiceImpl implements FileService {
+
+	@Autowired
+	private FilePropertiesRepository filePropertiesRepository;
+	private final Path fileStorageLocation;
+	private final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+
+	@Autowired
+	public FileServiceImpl(Environment environment) throws FileStorageException {
+		logger.info("fileproperties {}", environment.getProperty("file.location"));
+		this.fileStorageLocation = Paths.get(environment.getProperty("file.location")).toAbsolutePath().normalize();
+		try {
+			Files.createDirectories(this.fileStorageLocation);
+		} catch (Exception ex) {
+			logger.info("exception occurred {}", ex.getMessage());
+			throw new FileStorageException(Constants.STORAGE_NOT_FOUND);
+		}
+	}
+
+	@Override
+	public String upload(MultipartFile file, String userUuid) {
+		StringBuilder builder = new StringBuilder();
+		String fileName = builder.append(userUuid).append(Constants.UNDERSCORE).append(file.getOriginalFilename())
+				.toString();
+		logger.info("fileName {}", fileName);
+		Path targetLocation = this.fileStorageLocation.resolve(fileName);
+		try {
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			logger.info("exception occurred {}", e.getMessage());
+			throw new FileStorageException(Constants.FILE_NOT_SAVED);
+		}
+		this.persistFileProperties(fileName, userUuid, true);
+		return file.getOriginalFilename();
+	}
+
+	private FileProperties persistFileProperties(String fileName, String userUuid, boolean status) {
+		Optional<FileProperties> value = findFileProperties(fileName, status);
+		FileProperties fileProperty = null;
+		if (value.isPresent()) {
+			fileProperty = value.get();
+			fileProperty.setStatus(status);
+		} else {
+			String dateCreated = dateFormat.format(new Date());
+			String fileLocation = this.fileStorageLocation.resolve(fileName).toString();
+			fileProperty = new FileProperties(UUID.randomUUID().toString(), fileName, dateCreated, fileLocation,
+					userUuid, status);
+		}
+		return filePropertiesRepository.save(fileProperty);
+
+	}
+
+	private Optional<FileProperties> findFileProperties(String fileName, boolean status) {
+		Optional<FileProperties> value = filePropertiesRepository.findFilePropertiesByFileNameAndStatus(fileName,
+				status);
+		return value;
+	}
+
+	@Override
+	public Resource retrieveFile(String fileName, String userUuid) {
+		Resource resource = null;
+		try {
+			StringBuilder builder = new StringBuilder();
+			String uploadedFileName = builder.append(userUuid).append(Constants.UNDERSCORE).append(fileName).toString();
+			Optional<FileProperties> fileProperty = findFileProperties(uploadedFileName, true);
+			if (fileProperty.isPresent()) {
+				Path filePath = this.fileStorageLocation.resolve(uploadedFileName).normalize();
+				resource = new UrlResource(filePath.toUri());
+			} else {
+				throw new FileStorageException(Constants.FILE_NOT_FOUND + fileName);
+			}
+		} catch (MalformedURLException ex) {
+			throw new FileStorageException(Constants.FILE_NOT_FOUND + fileName);
+		}
+		return resource;
+	}
+
+	@Override
+	public List<FileServiceResponse> viewFiles(String userUuid) {
+		Optional<List<FileProperties>> results = filePropertiesRepository
+				.findFilePropertiesByUserUuidAndStatus(userUuid, true);
+		List<FileProperties> list = results.isPresent() ? results.get() : null;
+		return list.stream().map(r -> new FileServiceResponse(cleanFileName(r.getFileName(), userUuid),
+				getUri(cleanFileName(r.getFileName(), userUuid), userUuid))).collect(Collectors.toList());
+	}
+
+	@Override
+	public void deleteFile(String userUuid, String fileName) {
+		Optional<FileProperties> results = filePropertiesRepository.findFilePropertiesByUserUuidAndFileNameAndStatus(userUuid, fileName, true);
+		FileProperties file = results.isPresent()?results.get(): null;
+		if(file == null) {
+			throw new FileStorageException(Constants.FILE_NOT_FOUND + fileName);
+		}
+		Path targetLocation = this.fileStorageLocation.resolve(file.getFileName());
+		try {
+			Files.delete(targetLocation);
+		} catch (IOException e) {
+			throw new FileStorageException(Constants.FILE_NOT_FOUND + fileName);
+		}
+		file.setStatus(false);
+		filePropertiesRepository.save(file);
+		
+		
+	}
+
+	private String getUri(String fileName, String userUuid) {
+		return ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFile/").path(userUuid).path("/")
+				.path(fileName).toUriString();
+	}
+
+	private String cleanFileName(String fileName, String userUuid) {
+		return fileName.substring(userUuid.length() + 1, fileName.length());
+	}
+}

@@ -1,0 +1,17 @@
+package qa.co.qnb.client;
+
+import java.util.List;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import qa.co.qnb.dto.PostDTO;
+@FeignClient(value = "post-service", url = "https://jsonplaceholder.typicode.com/", fallback = PostFallBack.class)
+public interface PostClient {
+	@GetMapping(value = "/users/{userId}/posts")
+	public List<PostDTO>  findPosts(@PathVariable("userId")String postId);
+	
+//	@PostMapping(value ="/posts")
+	public PostDTO savePost(PostDTO postDTO);
+}

@@ -1,0 +1,6 @@
+package qa.co.qnb.client;
+
+@FeignClient(url="https://jsonplaceholder.typicode.com/", name="post-client")
+public interface PostClient {
+
+}

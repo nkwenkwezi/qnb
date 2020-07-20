@@ -1,0 +1,14 @@
+package qa.co.qnb.domain;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name ="tblPosts")
+public class Post {
+	@Id
+	@Column(name ="uuid", nullable = false)
+	private String uuid;
+}

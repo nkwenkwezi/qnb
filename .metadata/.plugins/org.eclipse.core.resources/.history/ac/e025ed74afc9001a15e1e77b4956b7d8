@@ -1,0 +1,11 @@
+package qa.co.qnb.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import qa.co.qnb.domain.FileProperties;
+
+public interface FilePropertiesRepository extends JpaRepository<FileProperties, String> {
+	public Optional<FileProperties> findFilePropertiesByFileNameAndIsDeleted(String fileName,boolean isDeleted);
+}

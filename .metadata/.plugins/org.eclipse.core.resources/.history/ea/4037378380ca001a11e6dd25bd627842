@@ -1,0 +1,25 @@
+package qa.co.qnb.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import qa.co.qnb.client.PostClient;
+import qa.co.qnb.dto.PostDTO;
+
+@RestController
+public class PostController {
+	@Autowired
+	private PostClient postClient;
+	
+	@GetMapping(value ="/findAllPosts")
+	public ResponseEntity<PostDTO> findAllPosts(){
+		List<PostDTO> list = postClient.getPosts();
+		return new ResponseEntity<PostDTO>(list,HttpStatus.OK);
+	}
+
+}

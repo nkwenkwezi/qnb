@@ -1,0 +1,25 @@
+package qa.co.qnb.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import qa.co.qnb.client.CommentClient;
+import qa.co.qnb.dto.CommentDTO;
+
+@RestController
+public class CommentsController {
+	@Autowired
+	private CommentClient commentClient;
+	
+	@GetMapping( value ="/getComments/{postId}")
+	public ResponseEntity<List<CommentDTO>> getComments(@PathVariable("postId")String postId){
+		List<CommentDTO> list = commentClient.findComments(postId);
+		return new ResponseEntity<List<CommentDTO>>(list, HttpStatus.OK);
+	}
+}

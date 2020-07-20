@@ -1,0 +1,36 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-service
+  security:
+    user:
+      name: eureka
+      password: password
+
+# by default every Eureka Server is also an Eureka Client and requires (at least one) service URL to locate a peer.
+eureka:
+  instance:
+    metadata-map:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
+    hostName: localhost
+    
+  client:
+    service-url:
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka/
+    registerWithEureka: false
+    fetchRegistry: false
+       
+
+management:
+  endpoints:
+    web.exposure.include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+logging:
+    file: /Users/lundi/Documents/attorneys/logs/sala-eureka-server.log 
+    pattern:
+      file: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx'

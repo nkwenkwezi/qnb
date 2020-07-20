@@ -1,0 +1,21 @@
+package qa.co.qnb.client;
+
+import java.util.List;
+
+import qa.co.qnb.dto.PostDTO;
+
+public class PostFallBack implements PostClient {
+
+	@Override
+	public List<PostDTO> findPosts(String postId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PostDTO savePost(PostDTO postDTO) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

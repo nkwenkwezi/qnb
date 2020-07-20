@@ -1,0 +1,6 @@
+package qa.co.qnb.constants;
+
+public final class Constants {
+	public static final String STORAGE_NOT_FOUND ="Could not create a directory";
+	public static final String  CONTENT_TYPE = "application/octet-stream";
+}

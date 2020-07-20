@@ -1,0 +1,5 @@
+package qa.co.qnb.dto;
+
+public class FileResponse {
+
+}

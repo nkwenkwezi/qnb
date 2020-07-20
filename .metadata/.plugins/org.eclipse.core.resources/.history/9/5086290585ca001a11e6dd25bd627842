@@ -1,0 +1,19 @@
+package qa.co.qnb.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+
+JsonDeserialize(builder = CommentDTO.CommentBuilder.class)
+@Value
+@Builder
+public class CommentDTO {
+	private Long postId;
+	private Long id;
+	private String name;
+	private String email;
+	private String body;	
+	
+	
+}

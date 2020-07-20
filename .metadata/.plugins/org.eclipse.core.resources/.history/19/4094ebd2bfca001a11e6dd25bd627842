@@ -1,0 +1,27 @@
+package qa.co.qnb.convertor;
+
+import java.util.UUID;
+
+import qa.co.qnb.domain.Post;
+import qa.co.qnb.dto.PostDTO;
+
+public class Convertor {
+	public static PostDTO from(Post post) {
+		PostDTO dto = new PostDTO();
+		dto.setBody(post.getBody());
+		dto.setId(post.getPostId());
+		dto.setTitle(post.getTitle());
+		dto.setUserId(post.getUserId());
+		return dto;
+	}
+	public static Post to(PostDTO dto) {
+		Post post = new Post();
+		post.setBody(dto.getBody());
+		post.setDocumentId(dto.getDocumentId());
+		post.setPostId(dto.getId());
+		post.setTitle(dto.getTitle());
+		post.setUserId(dto.getUserId());
+		post.setUuid(UUID.randomUUID().toString());
+		return post;
+	}
+}	

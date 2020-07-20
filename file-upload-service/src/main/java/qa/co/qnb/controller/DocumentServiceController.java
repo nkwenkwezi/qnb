@@ -1,0 +1,82 @@
+package qa.co.qnb.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import qa.co.qnb.constants.Constants;
+import qa.co.qnb.dto.DocumentServiceResponse;
+import qa.co.qnb.exception.FileFormatNotSupported;
+import qa.co.qnb.service.DocumentService;
+
+@RestController
+public class DocumentServiceController {
+	@Autowired
+	private DocumentService documentService;
+
+	private static final Logger logger = LoggerFactory.getLogger(DocumentServiceController.class);
+
+	@PostMapping(value = "/uploadDocument")
+	public ResponseEntity<DocumentServiceResponse> uploadDocument(@RequestParam("file") MultipartFile file,
+			@RequestParam("userUuid") String userUuid) {
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		logger.info("fileName {}", fileName);
+		if (!fileName.contains(Constants.PDF) || !file.getContentType().equalsIgnoreCase(Constants.DOCUMENT_FORMAT)) {
+			throw new FileFormatNotSupported(Constants.DOCUMENT_FORMAT_NOT_SUPPORTED);
+		}
+		String documentUuid = documentService.upload(file, userUuid);
+		String documentUri = documentService.getDocumentUri(documentUuid, userUuid);
+		DocumentServiceResponse response = new DocumentServiceResponse(fileName, documentUri);
+		logger.info("response {}", response);
+		return new ResponseEntity<DocumentServiceResponse>(response, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/downloadDocument/user/{userUuid}/document/{fileUuid}")
+	public ResponseEntity<Resource> downloadDocument(@PathVariable("userUuid") String userUuid,
+			@PathVariable("fileUuid") String fileUuid, HttpServletRequest request) throws IOException {
+		Resource resource = documentService.retrieveDocument(fileUuid, userUuid);
+		logger.info("resource {}", resource);
+		if (resource != null) {
+			String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+			if (contentType == null) {
+				contentType = Constants.CONTENT_TYPE;
+			}
+			return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+					.header(HttpHeaders.CONTENT_DISPOSITION,
+							"attachment; filename=\"" + resource.getFile().getName() + "\"")
+					.body(resource);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping(value = "/viewDocuments/user/{userUuid}")
+	public ResponseEntity<List<DocumentServiceResponse>> viewDocuments(@PathVariable("userUuid") String userUuid) {
+		List<DocumentServiceResponse> list = documentService.viewDocuments(userUuid);
+		return new ResponseEntity<List<DocumentServiceResponse>>(list, HttpStatus.OK);
+	}
+
+	@PutMapping(value = "/deleteDocument/user/{userUuid}/documentName/{documentName}")
+	public ResponseEntity<DocumentServiceResponse> deleteDocument(@PathVariable("userUuid") String userUuid,
+			@PathVariable("documentName") String documentName) {
+		documentService.deleteFile(userUuid, documentName);
+		return new ResponseEntity<DocumentServiceResponse>(new DocumentServiceResponse(documentName, ""), HttpStatus.OK);
+	}
+}

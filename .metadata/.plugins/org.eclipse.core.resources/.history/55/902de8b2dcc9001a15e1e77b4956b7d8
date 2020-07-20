@@ -1,0 +1,10 @@
+package qa.co.qnb.domain;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name ="tblPosts")
+public class Post {
+
+}

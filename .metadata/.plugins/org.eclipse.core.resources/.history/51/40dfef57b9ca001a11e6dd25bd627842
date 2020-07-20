@@ -1,0 +1,5 @@
+package qa.co.qnb.repository;
+
+public interface PostRepository extends JPARepository<Post, String>{
+
+}

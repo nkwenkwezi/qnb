@@ -1,0 +1,60 @@
+package qa.co.qnb.domain;
+
+import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name ="tblComment")
+public class Comment {
+	@Id
+	@Column(name ="uuid", nullable=false)
+	private String uuid = UUID.randomUUID().toString();
+	private Long postId;
+	private Long commentId;
+	private String name;
+	private String email;
+	private String body;
+	public String getUuid() {
+		return uuid;
+	}
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+	public Long getPostId() {
+		return postId;
+	}
+	public void setPostId(Long postId) {
+		this.postId = postId;
+	}
+	public Long getCommentId() {
+		return commentId;
+	}
+	public void setCommentId(Long id) {
+		this.commentId = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getBody() {
+		return body;
+	}
+	public void setBody(String body) {
+		this.body = body;
+	}	
+	
+	
+	
+}

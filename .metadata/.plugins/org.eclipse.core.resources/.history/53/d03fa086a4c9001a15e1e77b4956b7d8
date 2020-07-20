@@ -1,0 +1,21 @@
+package qa.co.qnb.dto;
+
+import java.io.Serializable;
+
+public class FileServiceResponse implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String fileName;
+	private String fileUri;
+	private long fileSize;
+	public FileServiceResponse(String fileName, String fileUri, long fileSize) {
+		super();
+		this.fileName = fileName;
+		this.fileUri = fileUri;
+		this.fileSize = fileSize;
+	}
+	
+}

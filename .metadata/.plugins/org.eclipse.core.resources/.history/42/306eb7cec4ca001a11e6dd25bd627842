@@ -1,0 +1,36 @@
+package qa.co.qnb.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import qa.co.qnb.client.PostClient;
+import qa.co.qnb.dto.PostDTO;
+import qa.co.qnb.service.PostService;
+
+@RestController
+public class PostController {
+	@Autowired
+	private PostClient postClient;
+	@Autowired
+	private PostService postService;
+	private static final Logger logger = LoggerFactory.getLogger(PostController.class);
+	
+	@SuppressWarnings("unchecked")
+	@GetMapping( value ="/getPosts/{userId}/{documentId}")
+	public ResponseEntity<List<PostDTO>> getPosts(@PathVariable("userId")String userId, @PathVariable("documentId") String documentId){
+		List<PostDTO> list = postClient.findPosts(userId);
+		logger.info("list {}", list);
+		if(list != null) {
+				return new ResponseEntity<List<PostDTO>> (list.stream().map(s -> postService.savePost(s, documentId)).collect(Collectors.toList()),HttpStatus.OK);
+		}
+	}
+}

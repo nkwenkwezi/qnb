@@ -1,0 +1,5 @@
+package qa.co.qnb.service;
+
+public interface CommentService {
+
+}

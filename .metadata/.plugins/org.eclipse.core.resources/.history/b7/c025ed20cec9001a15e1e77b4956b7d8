@@ -1,0 +1,14 @@
+package qa.co.qnb.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import qa.co.qnb.domain.FileProperties;
+
+public interface FilePropertiesRepository extends JpaRepository<FileProperties, String> {
+	public Optional<FileProperties> findFilePropertiesByFileNameAndStatus(String fileName,boolean status);
+	public Optional<List<FileProperties>> findFilePropertiesByUserUuidAndStatus(String userUuid,boolean status);
+	
+}

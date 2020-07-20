@@ -1,0 +1,7 @@
+package qa.co.qnb.service.impl;
+
+import qa.co.qnb.service.PostService;
+
+public class PostServiceImpl implements PostService {
+
+}

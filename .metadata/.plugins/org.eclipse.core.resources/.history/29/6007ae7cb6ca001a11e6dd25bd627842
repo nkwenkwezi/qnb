@@ -1,0 +1,29 @@
+package qa.co.qnb.convertor;
+
+import java.util.UUID;
+
+import qa.co.qnb.domain.Comment;
+import qa.co.qnb.dto.CommentDTO;
+
+public class Convertor {
+	public static CommentDTO from(Comment comment) {
+		CommentDTO dto = new CommentDTO();
+		dto.setBody(body);
+		dto.setEmail(email);
+		dto.setId(id);
+		dto.setName(name);
+		dto.setPostId(postId);
+		return dto;
+	}
+	
+	public static Comment to(CommentDTO dto) {
+		Comment comment = new Comment();
+		comment.setBody(dto.getBody());
+		comment.setEmail(dto.getEmail());
+		comment.setId(dto.getId());
+		comment.setName(dto.getName());
+		comment.setPostId(dto.getPostId());
+		comment.setUuid(UUID.randomUUID().toString());
+		return comment;
+	}
+}

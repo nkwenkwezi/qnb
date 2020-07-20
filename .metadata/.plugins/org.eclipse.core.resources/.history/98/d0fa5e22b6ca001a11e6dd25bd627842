@@ -1,0 +1,5 @@
+package qa.co.qnb.domain;
+
+public class Comment {
+
+}
