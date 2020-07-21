@@ -1,9 +1,15 @@
 I created 5 services and they all work together 
-	-zuul-service - acts as a proxy for the other services. it is responsible for routing traffic to the relevant service. zuul service obtains route information from eureka-service 
-	-eureka-service - this service acts as a registry for service discovery, on start up a service registers itself with eureka-service so that zuul-service can be able to route traffic to correct destination 
-	-file-upload-service - service for uploading documents
-	-post-service - service for consuming posts from a 3rd party service, and associate a post with a document uploaded above.
-	-comment-service - service for consuming comments from a 3rd party service and associate the comment with the posts created above
+	
+-zuul-service - acts as a proxy for the other services. it is responsible for routing traffic to the relevant service. zuul service obtains route information from eureka-service 
+	
+-eureka-service - this service acts as a registry for service discovery, on start up a service registers itself with eureka-service so that zuul-service can be able to route traffic to correct destination 
+
+-file-upload-service - service for uploading documents
+
+-post-service - service for consuming posts from a 3rd party service, and associate a post with a document uploaded above.
+
+
+-comment-service - service for consuming comments from a 3rd party service and associate the comment with the posts created above
 
 available endpoints
 
